@@ -1,11 +1,12 @@
-import 'generate.dart';
 import 'package:flutter/material.dart';
+import 'package:test_project_weather/weather_page/bloc_wt_page/gen_func.dart';
 
+import '../data_wt_page/generate.dart';
 
 class WeatherHeader extends StatelessWidget {
   final WeatherData weather;
 
-  const WeatherHeader({super.key, required this.weather});
+  const WeatherHeader({required this.weather, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class WeatherHeader extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Мое местоположение",
+          'Мое местоположение',
           style: TextStyle(
             color: Colors.white70,
             fontSize: 16 * scale,
@@ -29,7 +30,7 @@ class WeatherHeader extends StatelessWidget {
           ),
         ),
         Text(
-          "${weather.currentTemp}°",
+          '${weather.currentTemp}°',
           style: TextStyle(
             fontSize: 90 * scale,
             fontWeight: FontWeight.w200,
@@ -40,7 +41,7 @@ class WeatherHeader extends StatelessWidget {
           style: TextStyle(fontSize: 22 * scale),
         ),
         Text(
-          "H:${weather.high}°  L:${weather.low}°",
+          'H:${weather.high}°  L:${weather.low}°',
           style: TextStyle(fontSize: 14 * scale),
         ),
       ],
@@ -49,46 +50,10 @@ class WeatherHeader extends StatelessWidget {
 }
 
 
-//     return Column(
-//       children: [
-//         const Text(
-//           "Мое местоположение",
-//           style: TextStyle(
-//             color: Color.fromARGB(204, 255, 255, 255),
-//             fontSize: 16,
-//           ),
-//         ),
-//         const SizedBox(height: 4),
-//         Text(
-//           weather.city,
-//           style: const TextStyle(color: Colors.white, fontSize: 36),
-//         ),
-//         const SizedBox(height: 12),
-//         Text(
-//           "${weather.currentTemp}°",
-//           style: const TextStyle(
-//             color: Colors.white,
-//             fontSize: 100,
-//             fontWeight: FontWeight.w200,
-//           ),
-//         ),
-//         Text(
-//           weather.condition,
-//           style: const TextStyle(color: Colors.white70, fontSize: 24),
-//         ),
-//         Text(
-//           "H:${weather.high}°  L:${weather.low}°",
-//           style: const TextStyle(color: Colors.white60, fontSize: 16),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-class WeatherSummary extends StatelessWidget {
+class WidgetsWeatherSummary extends StatelessWidget {
   final WeatherData weather;
 
-  const WeatherSummary({super.key, required this.weather});
+  const WidgetsWeatherSummary({required this.weather, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +64,8 @@ class WeatherSummary extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        "Завтра ожидается ${weather.changes} температуры, "
-        "максимальная температура составит ${weather.tomorrowHigh}°.",
+        'Завтра ожидается ${weather.changes} температуры, '
+        'максимальная температура составит ${weather.tomorrowHigh}°.',
         style: const TextStyle(color: Colors.white70, fontSize: 16),
       ),
     );
@@ -110,34 +75,32 @@ class WeatherSummary extends StatelessWidget {
 class HourlyForecast extends StatelessWidget {
   final List<HourlyWeather> hourly;
 
-  const HourlyForecast({super.key, required this.hourly});
+  const HourlyForecast({required this.hourly, super.key});
 
   @override
   Widget build(BuildContext context) {
-      //return SizedBox(
       return AspectRatio (
-      //height: 120,
       aspectRatio: 4.5,
       child: ListView.separated(
+        padding: EdgeInsets.zero,
         scrollDirection: Axis.horizontal,
         itemCount: hourly.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           final dataHour = hourly[index];
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 2.2,
+            //mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(dataHour.time, style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 6),
               Icon(
-                WeatherGenerator.getWeatherIcon(dataHour.condition),
+                ImageIcon.getWeatherIcon(dataHour.condition),
                 color: Colors.white,
                 size: 28,
               ),
-              const SizedBox(height: 6),
-              Text("${dataHour.temperature}°",
+              Text('${dataHour.temperature}°',
                   style: const TextStyle(color: Colors.white)),
-              Text("${dataHour.precipitation}%",
+              Text('${dataHour.precipitation}%',
                   style: const TextStyle(
                       color: Colors.lightBlueAccent, fontSize: 12)),
             ],
@@ -153,11 +116,11 @@ class ForecastInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
+    return const Padding(
+      padding: EdgeInsets.all(12),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           Icon(
             Icons.event_note,
             color: Color.fromARGB(179, 177, 173, 173),
@@ -165,7 +128,7 @@ class ForecastInfo extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            "Прогноз погоды на 10 дней",
+            'Прогноз погоды на 10 дней',
             style: TextStyle(
               color: Color.fromARGB(179, 177, 173, 173),
               fontSize: 16,
@@ -181,14 +144,14 @@ class ForecastInfo extends StatelessWidget {
 class DailyForecast extends StatelessWidget {
   final List<DailyWeather> daily;
 
-  const DailyForecast({super.key, required this.daily});
+  const DailyForecast({required this.daily, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: daily.map((dataDay) {
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
           child: Row(
             children: [
               Expanded(
@@ -201,11 +164,11 @@ class DailyForecast extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      WeatherGenerator.getWeatherIcon(dataDay.condition),
+                      ImageIcon.getWeatherIcon(dataDay.condition),
                       color: Colors.white,
                       size: 20,
                     ),
-                    Text("${dataDay.precipitation}%",
+                    Text('${dataDay.precipitation}%',
                         style: const TextStyle(
                             color: Colors.lightBlueAccent, fontSize: 12)),
                   ],
@@ -213,7 +176,7 @@ class DailyForecast extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  "${dataDay.low}° / ${dataDay.high}°",
+                  '${dataDay.low}° / ${dataDay.high}°',
                   style: const TextStyle(color: Colors.white70),
                 ),
               ),
@@ -222,5 +185,28 @@ class DailyForecast extends StatelessWidget {
         );
       }).toList(),
     );
+  }
+}
+
+
+
+class ImageIcon {
+  static IconData getWeatherIcon(String condition) {
+    switch (condition) {
+      case 'Ясно':
+        return Icons.wb_sunny;
+      case 'Частично облачно':
+        return Icons.wb_cloudy;
+      case 'Преимущественно облачно':
+        return Icons.cloud;
+      case 'Дождь':
+        return Icons.umbrella;
+      case 'Небольшой дождь':
+        return Icons.water_drop;
+      case 'Тумано':
+        return Icons.opacity;
+      default:
+        return Icons.cloud;
+    }
   }
 }
