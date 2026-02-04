@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test_project_weather/weather_page/bloc_wt_page/gen_func.dart';
+import 'package:test_project_weather/features/weather_screen/ui/weather_screen.dart';
+import 'features/favorites_screen/ui/favorites_screen.dart';
 
 
 void main() {
@@ -13,7 +14,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Weather main',
       theme: ThemeData.dark(),
-      home: const WeatherPage(),
+      initialRoute: '/favorites',
+      routes: {
+        '/favorites': (context) => const FavoritesScreen(),
+        '/weather': (context) => const WeatherPage(),
+      },
     );
+  }
+}
+
+
+
+class WeatherPage extends StatelessWidget {
+  const WeatherPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    final city = arg is String ? arg : null;
+    return WeatherScreen(selectedCity: city);
   }
 }
