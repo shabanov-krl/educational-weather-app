@@ -1,0 +1,36 @@
+import 'dart:async';
+
+import 'package:test_project_weather/features/city_details/data/wt_screen_repository.dart';
+import 'package:test_project_weather/features/city_details/domain/daily_weather_bloc/daily_weather_state.dart';
+import 'package:test_project_weather/features/common/weather_exception.dart';
+
+class DailyWeatherBloc {
+  final WeatherScreenRepository _weatherScreenRepository;
+
+  final StreamController<DailyWeatherState> _stateController =
+      StreamController<DailyWeatherState>.broadcast();
+
+  Stream<DailyWeatherState> get state => _stateController.stream;
+
+  DailyWeatherBloc({
+    required WeatherScreenRepository weatherScreenRepository,
+  }) : _weatherScreenRepository = weatherScreenRepository;
+
+  Future<void> getDailyWeather() async {
+    _stateController.add(const DailyWeatherState$Loading());
+
+    try {
+      final dailyWeather = await _weatherScreenRepository.getDailyWeather();
+
+      _stateController.add(DailyWeatherState$Success(dailyWeather));
+    } catch (e) {
+      final message = e is WeatherException ? e.message : e.toString();
+
+      _stateController.add(DailyWeatherState$Error(message));
+    }
+  }
+
+  void dispose() {
+    _stateController.close();
+  }
+}
