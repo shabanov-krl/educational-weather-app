@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_project_weather/features/city_details/ui/weather_screen.dart';
+import 'package:test_project_weather/features/city_details/ui/city_details_screen.dart';
 
 import 'features/favorites/ui/favorites_screen.dart';
 
@@ -16,9 +16,9 @@ class MyApp extends StatelessWidget {
         '/favorites': (context) => const FavoritesScreen(),
         '/weather': (context) {
           final arg = ModalRoute.of(context)?.settings.arguments;
-          final city = arg is String ? arg : null;
+          final String city = arg.toString();
 
-          return WeatherScreen(selectedCity: city);
+          return WeatherScreen(city: city);
         },
       },
     );

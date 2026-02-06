@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:test_project_weather/features/city_details/data/wt_screen_repository.dart';
+import 'package:test_project_weather/features/city_details/data/city_details_repository.dart';
 import 'package:test_project_weather/features/city_details/domain/daily_weather_bloc/daily_weather_state.dart';
 import 'package:test_project_weather/features/common/weather_exception.dart';
 
 class DailyWeatherBloc {
-  final WeatherScreenRepository _weatherScreenRepository;
+  final CityDetailsRepository _weatherScreenRepository;
 
   final StreamController<DailyWeatherState> _stateController =
       StreamController<DailyWeatherState>.broadcast();
@@ -13,14 +13,14 @@ class DailyWeatherBloc {
   Stream<DailyWeatherState> get state => _stateController.stream;
 
   DailyWeatherBloc({
-    required WeatherScreenRepository weatherScreenRepository,
+    required CityDetailsRepository weatherScreenRepository,
   }) : _weatherScreenRepository = weatherScreenRepository;
 
-  Future<void> getDailyWeather() async {
+  Future<void> getDailyWeather(String city) async {
     _stateController.add(const DailyWeatherState$Loading());
 
     try {
-      final dailyWeather = await _weatherScreenRepository.getDailyWeather();
+      final dailyWeather = await _weatherScreenRepository.getDailyWeather(city);
 
       _stateController.add(DailyWeatherState$Success(dailyWeather));
     } catch (e) {

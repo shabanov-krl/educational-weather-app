@@ -12,7 +12,7 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   final List<String> _favorites = ['Krasnodar', 'Moscow'];
   final TextEditingController _controller = TextEditingController();
-  final Map<String, Future<CurrentWeather>> _weatherFutures = {};
+  final Map<String, Future<CurrentWeatherModel>> _weatherFutures = {};
   bool _pushedWeather = false;
 
   @override
@@ -76,7 +76,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       _weatherFutures.remove(city);
                     });
                   },
-                  child: FutureBuilder<CurrentWeather>(
+                  child: FutureBuilder<CurrentWeatherModel>(
                     future: _weatherFutures[city],
                     builder: (context, snapshot) {
                       Widget subtitle;

@@ -1,7 +1,9 @@
-part of '../weather_screen.dart';
+part of '../city_details_screen.dart';
 
 class _HorlyWeatherSection extends StatefulWidget {
-  const _HorlyWeatherSection();
+  final String city;
+
+  const _HorlyWeatherSection(this.city);
 
   @override
   State<_HorlyWeatherSection> createState() => _HorlyWeatherSectionState();
@@ -17,7 +19,7 @@ class _HorlyWeatherSectionState extends State<_HorlyWeatherSection> {
     _hourlyWeatherBloc = HourlyWeatherBloc(
       weatherScreenRepository: DIContainer.weatherScreenRepository,
     );
-    _hourlyWeatherBloc.getHourlyWeather();
+    _hourlyWeatherBloc.getHourlyWeather(widget.city);
   }
 
   @override
@@ -34,14 +36,16 @@ class _HorlyWeatherSectionState extends State<_HorlyWeatherSection> {
       builder: (context, snapshot) {
         final state = snapshot.data;
         switch (state) {
+
           case null:
           case HourlyWeatherState$Loading():
             return const Center(child: CircularProgressIndicator());
+
           case HourlyWeatherState$Success(:final hourlyWeather):
             return SizedBox(
               height: 100,
               child: ListView.separated(
-                padding: EdgeInsets.zero,
+                padding: const EdgeInsets.only(left: 20),
                 scrollDirection: Axis.horizontal,
                 itemCount: hourlyWeather.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 16),
@@ -76,6 +80,7 @@ class _HorlyWeatherSectionState extends State<_HorlyWeatherSection> {
                 },
               ),
             );
+            
           case HourlyWeatherState$Error(:final message):
             return Center(
               child: Padding(
@@ -90,7 +95,7 @@ class _HorlyWeatherSectionState extends State<_HorlyWeatherSection> {
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
-                      onPressed: _hourlyWeatherBloc.getHourlyWeather,
+                      onPressed: () => _hourlyWeatherBloc.getHourlyWeather(widget.city),
                       child: const Text('Повторить'),
                     ),
                   ],

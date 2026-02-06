@@ -2,9 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'current_weather.g.dart';
 
-// TODO(kshabanov): add postfix Model for model classes
+// TODO(kshabanov): add postfix Model for model classes +
 @JsonSerializable()
-class CurrentWeather {
+class CurrentWeatherModel {
   final String city;
   final int currentTemp;
   final int high;
@@ -13,7 +13,7 @@ class CurrentWeather {
   final int tomorrowHigh;
   final String changes;
 
-  CurrentWeather({
+  CurrentWeatherModel({
     required this.city,
     required this.currentTemp,
     required this.high,
@@ -23,8 +23,8 @@ class CurrentWeather {
     required this.changes,
   });
 
-  factory CurrentWeather.fromJson(Map<String, dynamic> json) =>
-      _$CurrentWeatherFromJson(json);
+  factory CurrentWeatherModel.fromJson(Map<String, dynamic> json) =>
+      _$CurrentWeatherModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CurrentWeatherToJson(this);
+  Map<String, dynamic> toJson() => _$CurrentWeatherModelToJson(this);
 }

@@ -9,14 +9,13 @@ import 'package:test_project_weather/features/city_details/domain/horly_weather_
 
 part 'widgets/current_weather_section.dart';
 part 'widgets/daily_weather_section.dart';
-part 'widgets/forecast_info_section.dart';
 part 'widgets/hourly_weather_section.dart';
 
 class WeatherScreen extends StatelessWidget {
-  // TODO(kshabanov): must be required not nullable
-  final String? selectedCity;
+  // TODO(kshabanov): must be required not nullable +
+  final String city;
 
-  const WeatherScreen({super.key, this.selectedCity});
+  const WeatherScreen({required this.city, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,21 +25,19 @@ class WeatherScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(30),
-            child: _CurrentWeatherSection(city: selectedCity),
+            child: _CurrentWeatherSection(city),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8),
-            child: _HorlyWeatherSection(),
-          ),
-          const _ForecastInfo(),
-          const _DailyWeatherSection(),
+
+          _HorlyWeatherSection(city),
+
+          _DailyWeatherSection(city),
         ],
       ),
     );
   }
 }
 
-// // TODO(kshabanov): rename
+// // TODO(kshabanov): rename +
 // class ImageIcon {
 //   static IconData getWeatherIcon(String condition) {
 //     switch (condition) {

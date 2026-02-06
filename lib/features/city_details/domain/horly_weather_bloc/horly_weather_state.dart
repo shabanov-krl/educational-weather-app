@@ -9,7 +9,7 @@ class HourlyWeatherState$Loading extends HourlyWeatherState {
 }
 
 class HourlyWeatherState$Success extends HourlyWeatherState {
-  final List<HourlyWeather> hourlyWeather;
+  final List<HourlyWeatherModel> hourlyWeather;
   const HourlyWeatherState$Success(this.hourlyWeather);
 }
 

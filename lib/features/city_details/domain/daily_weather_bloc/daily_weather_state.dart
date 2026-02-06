@@ -9,7 +9,7 @@ class DailyWeatherState$Loading extends DailyWeatherState {
 }
 
 class DailyWeatherState$Success extends DailyWeatherState {
-  final List<DailyWeather> dailyWeather;
+  final List<DailyWeatherModel> dailyWeather;
 
   const DailyWeatherState$Success(this.dailyWeather);
 }

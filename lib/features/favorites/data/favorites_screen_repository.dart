@@ -8,11 +8,11 @@ class FavoritesScreenRepository {
     required FavoritesScreenRemoteDataSource favoritesScreenRemoteDataSource,
   }) : _favoritesScreenRemoteDataSource = favoritesScreenRemoteDataSource;
 
-  Future<CurrentWeather> getCurrentWeather([String? city]) async {
+  Future<CurrentWeatherModel> getCurrentWeather([String? city]) async {
     final remoteCurrentWeather = await _favoritesScreenRemoteDataSource
         .getCurrentWeather(city);
 
-    return CurrentWeather(
+    return CurrentWeatherModel(
       city: remoteCurrentWeather.city,
       currentTemp: remoteCurrentWeather.currentTemp,
       high: remoteCurrentWeather.high,

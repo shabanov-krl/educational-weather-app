@@ -9,7 +9,7 @@ class CurrentWeatherState$Loading extends CurrentWeatherState {
 }
 
 class CurrentWeatherState$Success extends CurrentWeatherState {
-  final CurrentWeather currentWeather;
+  final CurrentWeatherModel currentWeather;
 
   const CurrentWeatherState$Success(this.currentWeather);
 }

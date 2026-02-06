@@ -6,8 +6,8 @@ part of 'current_weather.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CurrentWeather _$CurrentWeatherFromJson(Map<String, dynamic> json) =>
-    CurrentWeather(
+CurrentWeatherModel _$CurrentWeatherModelFromJson(Map<String, dynamic> json) =>
+    CurrentWeatherModel(
       city: json['city'] as String,
       currentTemp: (json['currentTemp'] as num).toInt(),
       high: (json['high'] as num).toInt(),
@@ -17,13 +17,14 @@ CurrentWeather _$CurrentWeatherFromJson(Map<String, dynamic> json) =>
       changes: json['changes'] as String,
     );
 
-Map<String, dynamic> _$CurrentWeatherToJson(CurrentWeather instance) =>
-    <String, dynamic>{
-      'city': instance.city,
-      'currentTemp': instance.currentTemp,
-      'high': instance.high,
-      'low': instance.low,
-      'condition': instance.condition,
-      'tomorrowHigh': instance.tomorrowHigh,
-      'changes': instance.changes,
-    };
+Map<String, dynamic> _$CurrentWeatherModelToJson(
+  CurrentWeatherModel instance,
+) => <String, dynamic>{
+  'city': instance.city,
+  'currentTemp': instance.currentTemp,
+  'high': instance.high,
+  'low': instance.low,
+  'condition': instance.condition,
+  'tomorrowHigh': instance.tomorrowHigh,
+  'changes': instance.changes,
+};

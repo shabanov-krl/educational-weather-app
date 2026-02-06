@@ -1,9 +1,9 @@
-part of '../weather_screen.dart';
+part of '../city_details_screen.dart';
 
 class _CurrentWeatherSection extends StatefulWidget {
-  final String? city;
+  final String city;
 
-  const _CurrentWeatherSection({this.city});
+  const _CurrentWeatherSection(this.city);
 
   @override
   State<_CurrentWeatherSection> createState() => _CurrentWeatherSectionState();
@@ -32,8 +32,8 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(kshabanov): rename to textTheme
-    final t = Theme.of(context).textTheme;
+    // TODO(kshabanov): rename to textTheme +
+    final textTheme = Theme.of(context).textTheme;
 
     return StreamBuilder<CurrentWeatherState>(
       stream: _currentWeatherBloc.state,
@@ -46,7 +46,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
             return const Center(child: CircularProgressIndicator());
           case CurrentWeatherState$Success(:final currentWeather):
             return SizedBox(
-              height: 320,
+              height: 420,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +55,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       'Мое местоположение',
-                      style: t.bodyLarge?.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
                         color: Colors.white70,
                         fontSize: 18,
                       ),
@@ -67,7 +67,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
                       currentWeather.city,
-                      style: t.headlineLarge?.copyWith(
+                      style: textTheme.headlineLarge?.copyWith(
                         color: Colors.white,
                         fontSize: 42,
                       ),
@@ -83,7 +83,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         '${currentWeather.currentTemp}°',
-                        style: t.displayMedium?.copyWith(
+                        style: textTheme.displayMedium?.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 96,
                         ),
@@ -95,7 +95,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       currentWeather.condition,
-                      style: t.headlineSmall?.copyWith(
+                      style: textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                         fontSize: 24,
                       ),
@@ -107,7 +107,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
 
                   Text(
                     'H:${currentWeather.high}°  L:${currentWeather.low}°',
-                    style: t.bodyMedium?.copyWith(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: Colors.white70,
                       fontSize: 16,
                     ),
@@ -115,9 +115,19 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60),
+                    child: Text(
+                    'Завтра ожидается ${currentWeather.changes} температуры, '
+                    'максимальная температура составит ${currentWeather.high}°.',
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                  ),
                 ],
               ),
             );
+            
           case CurrentWeatherState$Error():
             return Center(
               child: Padding(

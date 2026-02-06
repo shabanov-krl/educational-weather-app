@@ -14,7 +14,7 @@ class FavoritesScreenRemoteDataSource {
     required MyHttpClient myHttpClient,
   }) : _myHttpClient = myHttpClient;
 
-  Future<CurrentWeather> getCurrentWeather([String? city]) async {
+  Future<CurrentWeatherModel> getCurrentWeather([String? city]) async {
     await _myHttpClient.get('https://api.test.com/current_weather');
 
     // if (rnd.nextBool()) {
@@ -26,7 +26,7 @@ class FavoritesScreenRemoteDataSource {
     final low = currentTemp - rnd.nextInt(6);
     final tomorrowHigh = 10 + rnd.nextInt(15);
 
-    return CurrentWeather(
+    return CurrentWeatherModel(
       city: city ?? 'Krasnodar',
       currentTemp: currentTemp,
       high: high,
