@@ -42,8 +42,9 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
 
         switch (data) {
           case null:
-          case CurrentWeatherState$Loading():
-            return const Center(child: CircularProgressIndicator());
+            case CurrentWeatherState$Loading():
+              return const Center(child: CircularProgressIndicator());
+
           case CurrentWeatherState$Success(:final currentWeather):
             return SizedBox(
               height: 420,

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:test_project_weather/core/di_container.dart';
-import 'package:test_project_weather/features/city_details/data/models/current_weather.dart';
+import 'package:test_project_weather/features/favorites/domain/city_matcher.dart';
+import 'package:test_project_weather/features/favorites/domain/favorites_cities_bloc/favorites_cities_bloc.dart';
+import 'package:test_project_weather/features/favorites/domain/favorites_cities_bloc/favorites_state.dart';
+
+part 'widgets/list_favorites_cities_section.dart';
+part 'widgets/search_button_cities_section.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -10,162 +15,164 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  final List<String> _favorites = ['Krasnodar', 'Moscow'];
-  final TextEditingController _controller = TextEditingController();
-  final Map<String, Future<CurrentWeatherModel>> _weatherFutures = {};
-  bool _pushedWeather = false;
+  late final FavoritesCitiesBloc _favoritesCitiesBloc;
+  bool _isWeatherScreenPushed = false;
 
   @override
   void initState() {
     super.initState();
-    for (final city in _favorites) {
-      _weatherFutures[city] = DIContainer.favoritesScreenRepository
-          .getCurrentWeather(city);
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !_pushedWeather && _favorites.isNotEmpty) {
-        _pushedWeather = true;
-        Navigator.pushNamed(context, '/weather', arguments: _favorites[0]);
-      }
-    });
+
+    _favoritesCitiesBloc = FavoritesCitiesBloc(
+      favoritesRepository: DIContainer.favoritesScreenRepository,
+    );
+    _favoritesCitiesBloc.loadFavoritesRequested();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+    _favoritesCitiesBloc.dispose();
 
-  void _addFavorite(String city) {
-    final trimmed = city.trim();
-    if (trimmed.isEmpty) {
-      return;
-    }
-    setState(() {
-      _favorites.add(trimmed);
-      _weatherFutures[trimmed] = DIContainer.favoritesScreenRepository
-          .getCurrentWeather(trimmed);
-    });
-    _controller.clear();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Weather'),
+      appBar: AppBar(title: const Text('Weather')),
+
+      body: StreamBuilder<FavoritesState>(
+        stream: _favoritesCitiesBloc.state,
+        builder: (context, snapshot) {
+          final state = snapshot.data;
+
+          switch (state) {
+            case null:
+            case FavoritesState$Loading():
+              return const Center(child: CircularProgressIndicator());
+
+            case FavoritesState$Success(
+              :final favoriteCities,
+              :final weatherByCity,
+            ):
+              _tryOpenWeatherScreen(favoriteCities);
+
+              return _ListFavoritesCitiesSection(
+                favoriteCities: favoriteCities,
+                weatherByCity: weatherByCity,
+                onTapCity: (city) =>
+                    Navigator.pushNamed(context, '/weather', arguments: city),
+                onRemoveAt: _favoritesCitiesBloc.favoriteRemovedAt,
+                onRefreshCity: _favoritesCitiesBloc.favoriteRefreshed,
+              );
+
+            case FavoritesState$Error(:final message):
+              return _FavoritesErrorSection(
+                message: message,
+                onRetry: () {
+                  _favoritesCitiesBloc.loadFavoritesRequested();
+                },
+              );
+
+            default:
+              return const SizedBox.shrink();
+          }
+        },
       ),
-      body: _favorites.isEmpty
-          ? const Center(child: Text('Нет избранных городов'))
-          : ListView.separated(
-              padding: const EdgeInsets.all(8),
-              itemBuilder: (context, index) {
-                final city = _favorites[index];
-                return Dismissible(
-                  key: ValueKey(city + index.toString()),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Colors.redAccent,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  onDismissed: (_) {
-                    setState(() {
-                      _favorites.removeAt(index);
-                      _weatherFutures.remove(city);
-                    });
-                  },
-                  child: FutureBuilder<CurrentWeatherModel>(
-                    future: _weatherFutures[city],
-                    builder: (context, snapshot) {
-                      Widget subtitle;
-                      Widget trailing;
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        subtitle = const Text('Загрузка...');
-                        trailing = const SizedBox(
-                          width: 64,
-                          child: Center(
-                            child: SizedBox(
-                              width: 12,
-                              height: 12,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        subtitle = const Text('Ошибка загрузки');
-                        trailing = const Text('—');
-                      } else if (snapshot.data case final data?) {
-                        subtitle = Text(data.condition);
-                        trailing = Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${data.currentTemp}°',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'H:${data.high}° L:${data.low}°',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        );
-                      } else {
-                        subtitle = const Text('—');
-                        trailing = const Text('—');
-                      }
-
-                      return ListTile(
-                        title: Text(
-                          city,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: subtitle,
-                        trailing: trailing,
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/weather',
-                            arguments: city,
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-              },
-              separatorBuilder: (_, __) => const Divider(height: 2),
-              itemCount: _favorites.length,
-            ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.all(22),
-        child: Row(
+        child: StreamBuilder<FavoritesState>(
+          stream: _favoritesCitiesBloc.state,
+          builder: (context, snapshot) {
+            final state = snapshot.data;
+
+            switch (state) {
+              case null:
+              case FavoritesState$Loading():
+                return _SearchButtonCitiesSection(
+                  citiesLoading: true,
+                  allCities: const [],
+                  onAddFavorite: (city) {
+                    _favoritesCitiesBloc.favoriteAdded(city);
+                  },
+                  findBestMatch: (_) => null,
+                  citiesErrorMessage: null,
+                );
+
+              case FavoritesState$Success(
+                :final isCitiesLoading,
+                :final allCities,
+                :final citiesErrorMessage,
+              ):
+                return _SearchButtonCitiesSection(
+                  citiesLoading: isCitiesLoading,
+                  allCities: allCities,
+                  onAddFavorite: (city) {
+                    _favoritesCitiesBloc.favoriteAdded(city);
+                  },
+                  findBestMatch: _favoritesCitiesBloc.findBestMatch,
+                  citiesErrorMessage: citiesErrorMessage,
+                );
+
+              case FavoritesState$Error():
+                return TextButton(
+                  onPressed: () {
+                    _favoritesCitiesBloc.loadFavoritesRequested();
+                  },
+                  child: const Text('Повторить загрузку'),
+                );
+
+              default:
+                return const SizedBox.shrink();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  void _tryOpenWeatherScreen(List<String> favoriteCities) {
+    if (_isWeatherScreenPushed || favoriteCities.isEmpty) {
+      return;
+    }
+
+    _isWeatherScreenPushed = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.pushNamed(context, '/weather', arguments: favoriteCities.first);
+    });
+  }
+}
+
+class _FavoritesErrorSection extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _FavoritesErrorSection({
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: 'Поиск города или аэропорта',
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: Colors.white12,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(80),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                onSubmitted: _addFavorite,
-              ),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: const Text('Повторить'),
             ),
           ],
         ),
