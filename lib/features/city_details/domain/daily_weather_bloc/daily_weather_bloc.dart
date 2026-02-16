@@ -17,20 +17,32 @@ class DailyWeatherBloc {
   }) : _weatherScreenRepository = weatherScreenRepository;
 
   Future<void> getDailyWeather(String city) async {
+    if (_stateController.isClosed) {
+      return;
+    }
     _stateController.add(const DailyWeatherState$Loading());
 
     try {
       final dailyWeather = await _weatherScreenRepository.getDailyWeather(city);
 
+      if (_stateController.isClosed) {
+        return;
+      }
       _stateController.add(DailyWeatherState$Success(dailyWeather));
     } catch (e) {
       final message = e is WeatherException ? e.message : e.toString();
 
+      if (_stateController.isClosed) {
+        return;
+      }
       _stateController.add(DailyWeatherState$Error(message));
     }
   }
 
   void dispose() {
+    if (_stateController.isClosed) {
+      return;
+    }
     _stateController.close();
   }
 }

@@ -17,20 +17,32 @@ class HourlyWeatherBloc {
   }) : _weatherScreenRepository = weatherScreenRepository;
 
   Future<void> getHourlyWeather(String city) async {
+    if (_stateController.isClosed) {
+      return;
+    }
     _stateController.add(const HourlyWeatherState$Loading());
 
     try {
       final hourlyWeather = await _weatherScreenRepository.getHourlyWeather(city);
 
+      if (_stateController.isClosed) {
+        return;
+      }
       _stateController.add(HourlyWeatherState$Success(hourlyWeather));
     } catch (e) {
       final message = e is WeatherException ? e.message : e.toString();
 
+      if (_stateController.isClosed) {
+        return;
+      }
       _stateController.add(HourlyWeatherState$Error(message));
     }
   }
 
   void dispose() {
+    if (_stateController.isClosed) {
+      return;
+    }
     _stateController.close();
   }
 }
