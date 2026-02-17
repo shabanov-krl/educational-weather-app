@@ -1,5 +1,9 @@
 part of '../favorites_screen.dart';
 
+// TODO(kshabanov): rename
+// TODO(kshabanov): создать отдельный блок и убрать жесткую связнось со страницей избранного.
+// TODO(kshabanov): (пока не делать) сделать так чтобы поле поиска можно было на любой странице переиспользовать
+// TODO(kshabanov): поправить баг чтобы при откртыии клаывы она не закрывала поле поиска
 class _SearchButtonCitiesSection extends StatelessWidget {
   final bool citiesLoading;
   final List<String> allCities;
@@ -24,8 +28,8 @@ class _SearchButtonCitiesSection extends StatelessWidget {
     final hintText = isLoading
         ? 'Загрузка списка городов...'
         : hasCitiesError
-            ? 'Список городов не загружен'
-            : 'Поиск города или аэропорта';
+        ? 'Список городов не загружен'
+        : 'Поиск города или аэропорта';
 
     return Autocomplete<String>(
       optionsBuilder: (value) {

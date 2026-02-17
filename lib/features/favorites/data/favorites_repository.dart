@@ -1,6 +1,7 @@
 import 'package:test_project_weather/features/city_details/data/models/current_weather.dart';
 import 'package:test_project_weather/features/favorites/data/datasources/favorites_remote_data_source.dart';
 
+// TODO(kshabanov): rename to cites_mock_data.json
 class FavoritesRepository {
   final FavoritesRemoteDataSource _favoritesRemoteDataSource;
 
@@ -9,9 +10,10 @@ class FavoritesRepository {
   }) : _favoritesRemoteDataSource = favoritesRemoteDataSource;
 
   Future<CurrentWeatherModel> getCurrentWeather(String city) async {
-    final remoteCurrentWeather = await _favoritesRemoteDataSource.getCurrentWeather(
-      city,
-    );
+    final remoteCurrentWeather = await _favoritesRemoteDataSource
+        .getCurrentWeather(
+          city,
+        );
 
     return CurrentWeatherModel(
       city: remoteCurrentWeather.city,

@@ -2,7 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'current_weather.g.dart';
 
-// TODO(kshabanov): add postfix Model for model classes +
+// TODO(kshabanov): rename file
+// TODO(kshabanov): не должно быть toJson, fromJson, это в dto
 @JsonSerializable()
 class CurrentWeatherModel {
   final String city;

@@ -16,8 +16,10 @@ class CurrentWeatherRemoteFutureDataDto {
     required this.changes,
   });
 
-  factory CurrentWeatherRemoteFutureDataDto.fromJson(Map<String, dynamic> json) =>
-      _$CurrentWeatherRemoteFutureDataDtoFromJson(json);
+  factory CurrentWeatherRemoteFutureDataDto.fromJson(
+    Map<String, dynamic> json,
+  ) => _$CurrentWeatherRemoteFutureDataDtoFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CurrentWeatherRemoteFutureDataDtoToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$CurrentWeatherRemoteFutureDataDtoToJson(this);
 }
