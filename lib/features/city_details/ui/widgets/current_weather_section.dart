@@ -32,7 +32,6 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(kshabanov): rename to textTheme +
     final textTheme = Theme.of(context).textTheme;
 
     return StreamBuilder<CurrentWeatherState>(
@@ -42,8 +41,8 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
 
         switch (data) {
           case null:
-            case CurrentWeatherState$Loading():
-              return const Center(child: CircularProgressIndicator());
+          case CurrentWeatherState$Loading():
+            return const Center(child: CircularProgressIndicator());
 
           case CurrentWeatherState$Success(:final currentWeather):
             return SizedBox(
@@ -120,15 +119,18 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                   Padding(
                     padding: const EdgeInsets.only(top: 60),
                     child: Text(
-                    'Завтра ожидается ${currentWeather.changes} температуры, '
-                    'максимальная температура составит ${currentWeather.high}°.',
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
+                      'Завтра ожидается ${currentWeather.changes} температуры, '
+                      'максимальная температура составит ${currentWeather.high}°.',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ],
               ),
             );
-            
+
           case CurrentWeatherState$Error():
             return Center(
               child: Padding(

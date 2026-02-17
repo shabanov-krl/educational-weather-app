@@ -1,5 +1,11 @@
-
-List<String> filterCities(List<String> allCities, String query, {int limit = 5}) {
+// TODO(kshabanov): rename file name == func name
+// TODO(kshabanov): rm dirs windows and macos
+// TODO(kshabanov): перенести в BLOC
+List<String> filterCities(
+  List<String> allCities,
+  String query, {
+  int limit = 5,
+}) {
   final normQuery = query.trim().toLowerCase();
 
   if (normQuery.isEmpty) {
@@ -11,7 +17,7 @@ List<String> filterCities(List<String> allCities, String query, {int limit = 5})
 
   for (final city in allCities) {
     final lower = city.toLowerCase();
-    
+
     if (lower.startsWith(normQuery)) {
       starts.add(city);
     } else if (lower.contains(normQuery)) {
@@ -26,7 +32,7 @@ List<String> filterCities(List<String> allCities, String query, {int limit = 5})
   return matches;
 }
 
-
+// TODO(kshabanov): перенести в BLOC
 String? findBestMatch(List<String> allCities, String input) {
   final normQuery = input.trim().toLowerCase();
 
@@ -42,12 +48,16 @@ String? findBestMatch(List<String> allCities, String input) {
     return exact;
   }
 
-  final starts = allCities.where((city) => city.toLowerCase().startsWith(normQuery));
+  final starts = allCities.where(
+    (city) => city.toLowerCase().startsWith(normQuery),
+  );
   if (starts.isNotEmpty) {
     return starts.first;
   }
 
-  final contains = allCities.where((city) => city.toLowerCase().contains(normQuery));
+  final contains = allCities.where(
+    (city) => city.toLowerCase().contains(normQuery),
+  );
   if (contains.isNotEmpty) {
     return contains.first;
   }

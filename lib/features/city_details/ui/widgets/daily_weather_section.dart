@@ -1,7 +1,5 @@
 part of '../city_details_screen.dart';
 
-
-// TODO(kshabanov): merge with daily weather section + 
 class _DailyWeatherSection extends StatefulWidget {
   final String city;
 
@@ -27,7 +25,7 @@ class _DailyWeatherSectionState extends State<_DailyWeatherSection> {
   @override
   void dispose() {
     _dailyWeatherBloc.dispose();
-    
+
     super.dispose();
   }
 
@@ -77,7 +75,10 @@ class _DailyWeatherSectionState extends State<_DailyWeatherSection> {
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
+                  ),
                   itemCount: dailyWeather.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
@@ -99,7 +100,8 @@ class _DailyWeatherSectionState extends State<_DailyWeatherSection> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Icon(
-                                weatherConditionIcons[dataDailyWeather.condition] ??
+                                weatherConditionIcons[dataDailyWeather
+                                        .condition] ??
                                     Icons.help_outline,
                                 color: Colors.white,
                                 size: 20,

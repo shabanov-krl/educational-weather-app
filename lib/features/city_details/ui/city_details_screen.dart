@@ -12,7 +12,6 @@ part 'widgets/daily_weather_section.dart';
 part 'widgets/hourly_weather_section.dart';
 
 class WeatherScreen extends StatelessWidget {
-  // TODO(kshabanov): must be required not nullable +
   final String city;
 
   const WeatherScreen({required this.city, super.key});
@@ -36,28 +35,6 @@ class WeatherScreen extends StatelessWidget {
     );
   }
 }
-
-// // TODO(kshabanov): rename +
-// class ImageIcon {
-//   static IconData getWeatherIcon(String condition) {
-//     switch (condition) {
-//       case 'Ясно':
-//         return Icons.wb_sunny;
-//       case 'Частично облачно':
-//         return Icons.wb_cloudy;
-//       case 'Преимущественно облачно':
-//         return Icons.cloud;
-//       case 'Дождь':
-//         return Icons.umbrella;
-//       case 'Небольшой дождь':
-//         return Icons.water_drop;
-//       case 'Тумано':
-//         return Icons.opacity;
-//       default:
-//         return Icons.cloud;
-//     }
-//   }
-// }
 
 final weatherConditionIcons = {
   'Ясно': Icons.wb_sunny,

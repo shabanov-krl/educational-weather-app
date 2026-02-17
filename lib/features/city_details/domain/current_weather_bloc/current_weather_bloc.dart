@@ -20,6 +20,7 @@ class CurrentWeatherBloc {
     if (_stateController.isClosed) {
       return;
     }
+
     _stateController.add(const CurrentWeatherState$Loading());
 
     try {
@@ -30,13 +31,16 @@ class CurrentWeatherBloc {
       if (_stateController.isClosed) {
         return;
       }
+
       _stateController.add(CurrentWeatherState$Success(currentWeather));
     } catch (e) {
       final message = e is WeatherException ? e.message : e.toString();
 
+      // TODO(kshabanov): вынести это в функцию emit
       if (_stateController.isClosed) {
         return;
       }
+
       _stateController.add(CurrentWeatherState$Error(message));
     }
   }
@@ -45,6 +49,7 @@ class CurrentWeatherBloc {
     if (_stateController.isClosed) {
       return;
     }
+
     _stateController.close();
   }
 }
