@@ -1,6 +1,6 @@
-// TODO(kshabanov): rename file name == func name
-// TODO(kshabanov): rm dirs windows and macos
-// TODO(kshabanov): перенести в BLOC
+// TODO(kshabanov): rename file name == func name +-
+// TODO(kshabanov): rm dirs windows and macos +
+// TODO(kshabanov): перенести в BLOC +
 List<String> filterCities(
   List<String> allCities,
   String query, {
@@ -32,7 +32,7 @@ List<String> filterCities(
   return matches;
 }
 
-// TODO(kshabanov): перенести в BLOC
+// TODO(kshabanov): перенести в BLOC +
 String? findBestMatch(List<String> allCities, String input) {
   final normQuery = input.trim().toLowerCase();
 

@@ -1,9 +1,10 @@
 part of '../city_details_screen.dart';
 
 class _CurrentWeatherSection extends StatefulWidget {
-  final String city;
+  final int cityId;
+  final String nameCity;
 
-  const _CurrentWeatherSection(this.city);
+  const _CurrentWeatherSection(this.cityId, this.nameCity);
 
   @override
   State<_CurrentWeatherSection> createState() => _CurrentWeatherSectionState();
@@ -20,7 +21,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
       weatherScreenRepository: DIContainer.weatherScreenRepository,
     );
 
-    _currentWeatherBloc.getCurrentWeather(widget.city);
+    _currentWeatherBloc.getCurrentWeather(widget.cityId, widget.nameCity);
   }
 
   @override
@@ -146,7 +147,7 @@ class _CurrentWeatherSectionState extends State<_CurrentWeatherSection> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () {
-                        _currentWeatherBloc.getCurrentWeather(widget.city);
+                        _currentWeatherBloc.getCurrentWeather(widget.cityId, widget.nameCity);
                       },
                       child: const Text('Повторить'),
                     ),

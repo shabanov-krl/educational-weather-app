@@ -1,7 +1,6 @@
-import 'package:test_project_weather/features/city_details/data/models/current_weather.dart';
 import 'package:test_project_weather/features/favorites/data/datasources/favorites_remote_data_source.dart';
+import 'package:test_project_weather/features/favorites/data/models/favorites_cities_model.dart';
 
-// TODO(kshabanov): rename to cites_mock_data.json
 class FavoritesRepository {
   final FavoritesRemoteDataSource _favoritesRemoteDataSource;
 
@@ -9,26 +8,25 @@ class FavoritesRepository {
     required FavoritesRemoteDataSource favoritesRemoteDataSource,
   }) : _favoritesRemoteDataSource = favoritesRemoteDataSource;
 
-  Future<CurrentWeatherModel> getCurrentWeather(String city) async {
-    final remoteCurrentWeather = await _favoritesRemoteDataSource
-        .getCurrentWeather(
-          city,
-        );
+  Future<FavoritesCitiesModel> getFavoritesCities(int cityId) async {
+    final remoteFavoritesCities = await _favoritesRemoteDataSource
+        .getFavoritesCities(cityId,);
 
-    return CurrentWeatherModel(
-      city: remoteCurrentWeather.city,
-      currentTemp: remoteCurrentWeather.currentTemp,
-      high: remoteCurrentWeather.high,
-      low: remoteCurrentWeather.low,
-      condition: remoteCurrentWeather.condition,
-      tomorrowHigh: remoteCurrentWeather.tomorrowHigh,
-      changes: remoteCurrentWeather.changes,
+    return FavoritesCitiesModel(
+      cityId: remoteFavoritesCities.cityId,
+      city: remoteFavoritesCities.city,
+      currentTemp: remoteFavoritesCities.currentTemp,
+      high: remoteFavoritesCities.high,
+      low: remoteFavoritesCities.low,
+      condition: remoteFavoritesCities.condition,
     );
   }
 
-  Future<List<String>> loadCities({
-    String assetPath = 'lib/features/favorites/data/map_cities.json',
-  }) async {
-    return _favoritesRemoteDataSource.loadCities(assetPath: assetPath);
+  Future<void> addFavoriteCity(int cityId) async {
+    await _favoritesRemoteDataSource.addFavoritesCities(cityId);
+  }
+
+  Future<void> removeFavoriteCity(int cityId) async {
+    await _favoritesRemoteDataSource.removeFavoritesCities(cityId);
   }
 }

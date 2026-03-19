@@ -16,40 +16,39 @@ class CurrentWeatherBloc {
     required CityDetailsRepository weatherScreenRepository,
   }) : _weatherScreenRepository = weatherScreenRepository;
 
-  Future<void> getCurrentWeather(String city) async {
-    if (_stateController.isClosed) {
-      return;
-    }
+  Future<void> getCurrentWeather(int cityId, String nameCity) async {
 
-    _stateController.add(const CurrentWeatherState$Loading());
+    // TODO(kshabanov): вынести это в функцию emit +
+      // if (_stateController.isClosed) {
+      //   return;
+      // }
+
+    _emitState(const CurrentWeatherState$Loading());
 
     try {
       final currentWeather = await _weatherScreenRepository.getCurrentWeather(
-        city,
+        cityId, nameCity
       );
 
-      if (_stateController.isClosed) {
-        return;
-      }
-
-      _stateController.add(CurrentWeatherState$Success(currentWeather));
+      _emitState(CurrentWeatherState$Success(currentWeather));
     } catch (e) {
       final message = e is WeatherException ? e.message : e.toString();
 
-      // TODO(kshabanov): вынести это в функцию emit
-      if (_stateController.isClosed) {
-        return;
-      }
-
-      _stateController.add(CurrentWeatherState$Error(message));
+      _emitState(CurrentWeatherState$Error(message));
     }
   }
 
   void dispose() {
+    if (!_stateController.isClosed) {
+      _stateController.close();
+    }
+  }
+
+  void _emitState(CurrentWeatherState state) {
     if (_stateController.isClosed) {
       return;
     }
 
-    _stateController.close();
+    _stateController.add(state);
   }
 }

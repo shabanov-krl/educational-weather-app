@@ -1,4 +1,4 @@
-import 'package:test_project_weather/features/city_details/data/models/daily_weather.dart';
+import 'package:test_project_weather/features/city_details/data/models/daily_weather_model.dart';
 
 interface class DailyWeatherState {
   const DailyWeatherState();

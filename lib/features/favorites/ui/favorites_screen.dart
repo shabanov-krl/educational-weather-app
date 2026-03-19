@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:test_project_weather/core/di_container.dart';
-import 'package:test_project_weather/features/favorites/domain/city_matcher.dart';
+import 'package:test_project_weather/features/favorites/data/models/favorites_cities_model.dart';
+import 'package:test_project_weather/features/favorites/data/models/list_cities_model.dart';
 import 'package:test_project_weather/features/favorites/domain/favorites_cities_bloc/favorites_cities_bloc.dart';
 import 'package:test_project_weather/features/favorites/domain/favorites_cities_bloc/favorites_state.dart';
+import 'package:test_project_weather/features/favorites/domain/search_button_bloc/search_button_bloc.dart';
+import 'package:test_project_weather/features/favorites/domain/search_button_bloc/search_button_state.dart';
 
 part 'widgets/list_favorites_cities_section.dart';
 part 'widgets/search_button_cities_section.dart';
@@ -16,6 +19,9 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   late final FavoritesCitiesBloc _favoritesCitiesBloc;
+  late final SearchButtonBloc _searchButtonBloc;
+
+  FavoritesStateGet$Success? _lastLoadedFavoritesState;
   bool _isWeatherScreenPushed = false;
 
   @override
@@ -23,15 +29,22 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     super.initState();
 
     _favoritesCitiesBloc = FavoritesCitiesBloc(
+      citiesRepository: DIContainer.citiesRepository,
       favoritesRepository: DIContainer.favoritesScreenRepository,
     );
-    _favoritesCitiesBloc.loadFavoritesRequested();
+
+    _searchButtonBloc = SearchButtonBloc(
+      citiesRepository: DIContainer.citiesRepository,
+    );
+
+    _favoritesCitiesBloc.getFavoritesCities();
+    _searchButtonBloc.init();
   }
 
   @override
   void dispose() {
     _favoritesCitiesBloc.dispose();
-
+    _searchButtonBloc.dispose();
     super.dispose();
   }
 
@@ -39,100 +52,119 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Weather')),
-
       body: StreamBuilder<FavoritesState>(
         stream: _favoritesCitiesBloc.state,
         builder: (context, snapshot) {
           final state = snapshot.data;
 
-          switch (state) {
-            case null:
-            case FavoritesState$Loading():
-              return const Center(child: CircularProgressIndicator());
-
-            case FavoritesState$Success(
-              :final favoriteCities,
-              :final weatherByCity,
-            ):
-              _tryOpenWeatherScreen(favoriteCities);
-
-              return _ListFavoritesCitiesSection(
-                favoriteCities: favoriteCities,
-                weatherByCity: weatherByCity,
-                onTapCity: (city) =>
-                    Navigator.pushNamed(context, '/weather', arguments: city),
-                onRemoveAt: _favoritesCitiesBloc.favoriteRemovedAt,
-                onRefreshCity: _favoritesCitiesBloc.favoriteRefreshed,
-              );
-
-            case FavoritesState$Error(:final message):
-              return _FavoritesErrorSection(
-                message: message,
-                onRetry: () {
-                  _favoritesCitiesBloc.loadFavoritesRequested();
-                },
-              );
-
-            default:
-              return const SizedBox.shrink();
+          if (state is FavoritesStateGet$Success) {
+            _lastLoadedFavoritesState = state;
           }
+
+          final dataState = state is FavoritesStateGet$Success
+              ? state
+              : _lastLoadedFavoritesState;
+
+          if (dataState == null) {
+            if (state is FavoritesState$Error) {
+              return _FavoritesErrorSection(
+                message: state.message,
+                onRetry: _favoritesCitiesBloc.getFavoritesCities,
+              );
+            }
+
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          _tryOpenWeatherScreen(
+            dataState.favoriteCities,
+            dataState.weatherByCity,
+          );
+
+          return Stack(
+            children: [
+              _ListFavoritesCitiesSection(
+                favoriteCities: dataState.favoriteCities,
+                weatherByCity: dataState.weatherByCity,
+                onTapCity: _openWeatherFromFavorites,
+                onRemoveCity: _favoritesCitiesBloc.removeFavoriteCity,
+              ),
+              if (state is FavoritesState$Loading)
+                const Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: LinearProgressIndicator(),
+                ),
+            ],
+          );
         },
       ),
-
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.all(22),
-        child: StreamBuilder<FavoritesState>(
-          stream: _favoritesCitiesBloc.state,
+        child: StreamBuilder<SearchButtonState>(
+          stream: _searchButtonBloc.state,
+          initialData: const SearchButtonState$LoadingCities(),
           builder: (context, snapshot) {
-            final state = snapshot.data;
+            final state =
+                snapshot.data ?? const SearchButtonState$LoadingCities();
 
-            switch (state) {
-              case null:
-              case FavoritesState$Loading():
-                return _SearchButtonCitiesSection(
-                  citiesLoading: true,
-                  allCities: const [],
-                  onAddFavorite: (city) {
-                    _favoritesCitiesBloc.favoriteAdded(city);
-                  },
-                  findBestMatch: (_) => null,
-                  citiesErrorMessage: null,
-                );
-
-              case FavoritesState$Success(
-                :final isCitiesLoading,
-                :final allCities,
-                :final citiesErrorMessage,
-              ):
-                return _SearchButtonCitiesSection(
-                  citiesLoading: isCitiesLoading,
-                  allCities: allCities,
-                  onAddFavorite: (city) {
-                    _favoritesCitiesBloc.favoriteAdded(city);
-                  },
-                  findBestMatch: _favoritesCitiesBloc.findBestMatch,
-                  citiesErrorMessage: citiesErrorMessage,
-                );
-
-              case FavoritesState$Error():
-                return TextButton(
-                  onPressed: () {
-                    _favoritesCitiesBloc.loadFavoritesRequested();
-                  },
-                  child: const Text('Повторить загрузку'),
-                );
-
-              default:
-                return const SizedBox.shrink();
-            }
+            return _SearchButtonCitiesSection(
+              state: state,
+              onQueryChanged: _searchButtonBloc.onQueryChanged,
+              onSelectedCity: (city) {
+                _searchButtonBloc.clear();
+                _openWeatherFromSearch(city);
+              },
+            );
           },
         ),
       ),
     );
   }
 
-  void _tryOpenWeatherScreen(List<String> favoriteCities) {
+  Future<void> _addCityToFavorites(int cityId) async {
+    await _favoritesCitiesBloc.addFavoriteCity(cityId);
+  }
+
+  void _openWeatherFromFavorites(FavoritesCitiesModel cityWeather) {
+    Navigator.pushNamed(
+      context,
+      '/weather',
+      arguments: {
+        'cityId': cityWeather.cityId,
+        'cityName': cityWeather.city,
+        'openedFromSearch': false,
+        'onAddToFavorites': _addCityToFavorites,
+      },
+    );
+  }
+
+  void _openWeatherFromSearch(ListCitiesModel city) {
+    Navigator.pushNamed(
+      context,
+      '/weather',
+      arguments: {
+        'cityId': city.cityId,
+        'cityName': city.city,
+        'openedFromSearch': true,
+        'onAddToFavorites': _addCityToFavorites,
+      },
+    );
+  }
+
+  void _tryOpenWeatherScreen(
+    List<String> favoriteCities,
+    Map<String, FavoritesCitiesModel> weatherByCity,
+  ) {
     if (_isWeatherScreenPushed || favoriteCities.isEmpty) {
+      return;
+    }
+
+    final firstCityName = favoriteCities.first;
+    final firstCityWeather = weatherByCity[firstCityName];
+
+    if (firstCityWeather == null) {
       return;
     }
 
@@ -143,7 +175,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         return;
       }
 
-      Navigator.pushNamed(context, '/weather', arguments: favoriteCities.first);
+      _openWeatherFromFavorites(firstCityWeather);
     });
   }
 }

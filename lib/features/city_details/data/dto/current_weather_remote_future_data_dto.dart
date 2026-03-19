@@ -4,12 +4,14 @@ part 'current_weather_remote_future_data_dto.g.dart';
 
 @JsonSerializable()
 class CurrentWeatherRemoteFutureDataDto {
+  final int cityId;
   final String city;
   final String condition;
   final int tomorrowHigh;
   final String changes;
 
   CurrentWeatherRemoteFutureDataDto({
+    required this.cityId,
     required this.city,
     required this.condition,
     required this.tomorrowHigh,

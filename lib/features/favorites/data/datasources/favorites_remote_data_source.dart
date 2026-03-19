@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:test_project_weather/core/my_http_client.dart';
-import 'package:test_project_weather/features/city_details/data/models/current_weather.dart';
-import 'package:test_project_weather/features/city_details/data/weather_conditions.dart';
-import 'package:test_project_weather/features/common/weather_exception.dart';
+import 'package:test_project_weather/features/common/weather_conditions.dart';
+//import 'package:test_project_weather/features/common/weather_exception.dart';
+import 'package:test_project_weather/features/favorites/data/dto/favorites_cities_dto.dart';
+
 
 /// API
 ///
@@ -57,57 +56,32 @@ class FavoritesRemoteDataSource {
     required MyHttpClient myHttpClient,
   }) : _myHttpClient = myHttpClient;
 
-  Future<CurrentWeatherModel> getCurrentWeather(String city) async {
-    await _myHttpClient.get('https://api.test.com/current_weather/$city');
+  Future<FavoritesCitiesDto> getFavoritesCities(int cityId) async {
+    await _myHttpClient.get('https://api.test.com/get_favorites_cities/$cityId');
 
-    if (_random.nextBool()) {
-      throw WeatherException('Ошибка загрузки текущего прогноза погоды');
-    }
+    // if (_random.nextBool()) {
+    //   throw WeatherException('Ошибка загрузки избранных городов');
+    // }
 
     final currentTemp = 10 + _random.nextInt(15);
     final high = currentTemp + _random.nextInt(5);
     final low = currentTemp - _random.nextInt(6);
-    final tomorrowHigh = 10 + _random.nextInt(15);
 
-    return CurrentWeatherModel(
-      city: city,
+    return FavoritesCitiesDto(
+      cityId: cityId,
+      city: '',
       currentTemp: currentTemp,
       high: high,
       low: low,
       condition: WeatherConditions.random(),
-      tomorrowHigh: tomorrowHigh,
-      changes: tomorrowHigh > currentTemp ? 'повышение' : 'понижение',
     );
   }
 
-  Future<List<String>> loadCities({
-    String assetPath = 'lib/features/favorites/data/map_cities.json',
-  }) async {
-    final dynamic decoded = jsonDecode(await rootBundle.loadString(assetPath));
+  Future<void> addFavoritesCities(int cityId) async {
+    await _myHttpClient.add('https://api.test.com/add_favorites_cities_list/$cityId');
+  }
 
-    if (decoded is! List<dynamic>) {
-      return const [];
-    }
-
-    final cities = <String>[];
-
-    for (final item in decoded) {
-      if (item is Map<String, dynamic>) {
-        final value = item['nameCity'];
-
-        if (value is String) {
-          final trimmedValue = value.trim();
-
-          if (trimmedValue.isNotEmpty) {
-            cities.add(trimmedValue);
-          }
-        }
-      }
-    }
-
-    final unique = cities.toSet().toList()
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-
-    return unique;
+  Future<void> removeFavoritesCities(int cityId) async {
+    await _myHttpClient.delete('https://api.test.com/remove_favorites_cities_list/$cityId');
   }
 }

@@ -4,4 +4,12 @@ class MyHttpClient {
   Future<void> get(String url) async {
     await randomRequestTime();
   }
+
+  Future<void> add(String url) async {
+    await randomRequestTime();
+  }
+
+  Future<void> delete(String url) async {
+    await randomRequestTime();
+  }
 }

@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:test_project_weather/core/my_http_client.dart';
 import 'package:test_project_weather/features/city_details/data/dto/current_weather_remote_future_data_dto.dart';
 import 'package:test_project_weather/features/city_details/data/dto/current_weather_remote_today_data_dto.dart';
-import 'package:test_project_weather/features/city_details/data/models/daily_weather.dart';
-import 'package:test_project_weather/features/city_details/data/models/horly_weather.dart';
-import 'package:test_project_weather/features/city_details/data/weather_conditions.dart';
+import 'package:test_project_weather/features/city_details/data/dto/daily_weather_dto.dart';
+import 'package:test_project_weather/features/city_details/data/dto/hourly_weather_dto.dart';
+import 'package:test_project_weather/features/common/weather_conditions.dart';
 import 'package:test_project_weather/features/common/weather_exception.dart';
 
 class CityDetailsRemoteDataSource {
@@ -17,9 +17,9 @@ class CityDetailsRemoteDataSource {
   }) : _myHttpClient = myHttpClient;
 
   Future<CurrentWeatherRemoteTodayDataDto> getCurrentWeatherToday(
-    String city,
+    int cityId,
   ) async {
-    await _myHttpClient.get('https://api.test.com/current_weather/today/$city');
+    await _myHttpClient.get('https://api.test.com/current_weather/today/$cityId');
 
     // if (_rnd.nextBool()) {
     //   throw WeatherException('Ошибка загрузки текущего прогноза погоды');
@@ -30,19 +30,20 @@ class CityDetailsRemoteDataSource {
     final low = currentTemp - _rnd.nextInt(6);
 
     return CurrentWeatherRemoteTodayDataDto(
-      city: city,
+      cityId: cityId,
+      city: '',
       currentTemp: currentTemp,
       high: high,
       low: low,
     );
   }
 
-  // TODO(kshabanov): city должен быть - int cityId
+  // TODO(kshabanov): city должен быть - int cityId +
   Future<CurrentWeatherRemoteFutureDataDto> getCurrentWeatherFuture(
-    String city,
+    int cityId,
   ) async {
     await _myHttpClient.get(
-      'https://api.test.com/current_weather/futere/$city',
+      'https://api.test.com/current_weather/futere/$cityId',
     );
 
     if (_rnd.nextBool()) {
@@ -53,17 +54,18 @@ class CityDetailsRemoteDataSource {
     final tomorrowHigh = 10 + _rnd.nextInt(15);
 
     return CurrentWeatherRemoteFutureDataDto(
-      city: city,
+      cityId: cityId,
+      city: '',
       condition: WeatherConditions.random(),
       tomorrowHigh: tomorrowHigh,
       changes: tomorrowHigh > currentTemp ? 'повышение' : 'понижение',
     );
   }
 
-  // TODO(kshabanov): city должен быть - int cityId
-  // TODO(kshabanov): создать dto для всех моделей и из датасурса возвращать только dto, модели возвращать из репо
-  Future<List<HourlyWeatherModel>> getHourlyWeather(String city) async {
-    await _myHttpClient.get('https://api.test.com/hourly_weather/$city');
+  // TODO(kshabanov): city должен быть - int cityId +
+  // TODO(kshabanov): создать dto для всех моделей и из датасурса возвращать только dto, модели возвращать из репо +
+  Future<List<HourlyWeatherDto>> getHourlyWeather(int cityId) async {
+    await _myHttpClient.get('https://api.test.com/hourly_weather/$cityId');
 
     if (_rnd.nextBool()) {
       throw WeatherException('Ошибка загрузки почасового прогноза');
@@ -74,8 +76,9 @@ class CityDetailsRemoteDataSource {
     return List.generate(24, (i) {
       final hour = DateTime.now().add(Duration(hours: i));
 
-      return HourlyWeatherModel(
-        city: city,
+      return HourlyWeatherDto(
+        cityId: cityId,
+        city: '',
         time: i == 0 ? 'Сейчас' : '${hour.hour.toString().padLeft(2, '0')}:00',
         temperature: baseTemp + _rnd.nextInt(3) - 1,
         precipitation: _rnd.nextInt(80),
@@ -84,9 +87,9 @@ class CityDetailsRemoteDataSource {
     });
   }
 
-  // TODO(kshabanov): city должен быть - int cityId
-  Future<List<DailyWeatherModel>> getDailyWeather(String city) async {
-    await _myHttpClient.get('https://api.test.com/daily_weather/$city');
+  // TODO(kshabanov): city должен быть - int cityId +
+  Future<List<DailyWeatherDto>> getDailyWeather(int cityId) async {
+    await _myHttpClient.get('https://api.test.com/daily_weather/$cityId');
 
     if (_rnd.nextBool()) {
       throw WeatherException('Ошибка загрузки дневного прогноза');
@@ -95,8 +98,9 @@ class CityDetailsRemoteDataSource {
     return List.generate(10, (i) {
       final date = DateTime.now().add(Duration(days: i + 1));
 
-      return DailyWeatherModel(
-        city: city,
+      return DailyWeatherDto(
+        cityId: cityId,
+        city: '',
         day: i == 0 ? 'Завтра' : WeatherConditions.weekday(date.weekday),
         high: 10 + _rnd.nextInt(15),
         low: 5 + _rnd.nextInt(10),

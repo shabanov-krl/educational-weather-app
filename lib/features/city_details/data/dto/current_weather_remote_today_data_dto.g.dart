@@ -9,6 +9,7 @@ part of 'current_weather_remote_today_data_dto.dart';
 CurrentWeatherRemoteTodayDataDto _$CurrentWeatherRemoteTodayDataDtoFromJson(
   Map<String, dynamic> json,
 ) => CurrentWeatherRemoteTodayDataDto(
+  cityId: (json['cityId'] as num).toInt(),
   city: json['city'] as String,
   currentTemp: (json['currentTemp'] as num).toInt(),
   high: (json['high'] as num).toInt(),
@@ -18,6 +19,7 @@ CurrentWeatherRemoteTodayDataDto _$CurrentWeatherRemoteTodayDataDtoFromJson(
 Map<String, dynamic> _$CurrentWeatherRemoteTodayDataDtoToJson(
   CurrentWeatherRemoteTodayDataDto instance,
 ) => <String, dynamic>{
+  'cityId': instance.cityId,
   'city': instance.city,
   'currentTemp': instance.currentTemp,
   'high': instance.high,

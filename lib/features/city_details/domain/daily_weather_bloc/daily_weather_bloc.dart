@@ -16,33 +16,33 @@ class DailyWeatherBloc {
     required CityDetailsRepository weatherScreenRepository,
   }) : _weatherScreenRepository = weatherScreenRepository;
 
-  Future<void> getDailyWeather(String city) async {
-    if (_stateController.isClosed) {
-      return;
-    }
-    _stateController.add(const DailyWeatherState$Loading());
+  Future<void> getDailyWeather(int cityId) async {
+    _emitState(const DailyWeatherState$Loading());
 
     try {
-      final dailyWeather = await _weatherScreenRepository.getDailyWeather(city);
+      final dailyWeather = await _weatherScreenRepository.getDailyWeather(cityId);
 
-      if (_stateController.isClosed) {
-        return;
-      }
-      _stateController.add(DailyWeatherState$Success(dailyWeather));
+      _emitState(DailyWeatherState$Success(dailyWeather));
+
     } catch (e) {
       final message = e is WeatherException ? e.message : e.toString();
 
-      if (_stateController.isClosed) {
-        return;
-      }
-      _stateController.add(DailyWeatherState$Error(message));
+      _emitState(DailyWeatherState$Error(message));
     }
   }
 
   void dispose() {
+    if (!_stateController.isClosed) {
+      _stateController.close();
+    }
+  }
+
+  void _emitState(DailyWeatherState state) {
     if (_stateController.isClosed) {
       return;
     }
-    _stateController.close();
+
+    _stateController.add(state);
   }
+
 }

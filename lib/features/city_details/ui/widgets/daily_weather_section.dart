@@ -1,9 +1,9 @@
 part of '../city_details_screen.dart';
 
 class _DailyWeatherSection extends StatefulWidget {
-  final String city;
+  final int cityId;
 
-  const _DailyWeatherSection(this.city);
+  const _DailyWeatherSection(this.cityId);
 
   @override
   State<_DailyWeatherSection> createState() => _DailyWeatherSectionState();
@@ -19,7 +19,7 @@ class _DailyWeatherSectionState extends State<_DailyWeatherSection> {
     _dailyWeatherBloc = DailyWeatherBloc(
       weatherScreenRepository: DIContainer.weatherScreenRepository,
     );
-    _dailyWeatherBloc.getDailyWeather(widget.city);
+    _dailyWeatherBloc.getDailyWeather(widget.cityId);
   }
 
   @override
@@ -142,7 +142,7 @@ class _DailyWeatherSectionState extends State<_DailyWeatherSection> {
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () =>
-                              _dailyWeatherBloc.getDailyWeather(widget.city),
+                              _dailyWeatherBloc.getDailyWeather(widget.cityId),
                           child: const Text('Повторить'),
                         ),
                       ],

@@ -60,7 +60,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets: 
-    - lib/features/favorites/data/map_cities.json
+    - lib/features/favorites/data/cites_mock_data.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
